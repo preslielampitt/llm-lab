@@ -1,7 +1,7 @@
 # cmc-cs040-preslielampitt
  
-![doctest](https://github.com/preslielampitt/llm-lab/actions/workflows/doctest.yml/badge.svg)
-![integration-test](https://github.com/preslielampitt/llm-lab/actions/workflows/integration-test.yml/badge.svg)
+![doctest](https://github.com/preslielampitt/llm-lab/actions/workflows/doctests.yml/badge.svg)
+![integration-test](https://github.com/preslielampitt/llm-lab/actions/workflows/integration-tests.yml/badge.svg)
  
 This lab sets up the code for the upcoming LLM project.
 
