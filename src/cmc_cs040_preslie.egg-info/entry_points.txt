@@ -1,2 +1,2 @@
 [console_scripts]
-chat = chat:repl
+chat = cmc_cs040_preslie.chat:repl
