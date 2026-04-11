@@ -6,6 +6,10 @@ def cat(filename):
     True
     >>> cat('this_file_does_not_exist.txt')
     'File not found'
+    >>> cat('__pycache__/chat.cpython-314.pyc')
+    'File is not a readable text file'
+    >>> cat('__pycache__')
+    'Error reading file'
     '''
     try:
         with open(filename, 'r', encoding='utf-8') as f:
