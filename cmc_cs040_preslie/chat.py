@@ -1,7 +1,7 @@
 import os
 import json
 from groq import Groq
-from tools.calculate import calculate, tool_schema
+from .tools.calculate import calculate, tool_schema
 
 from dotenv import load_dotenv
 load_dotenv()

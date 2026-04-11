@@ -25,4 +25,3 @@ def ls(folder=None):
         for path in sorted(glob.glob('*')):
             result += path + ' '
         return result.strip()
-        # handle this case
