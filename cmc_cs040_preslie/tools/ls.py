@@ -5,7 +5,7 @@ def ls(folder=None):
     This function behaves just like the ls program in the shell.
 
     >>> ls()
-    'README.md cmc_cs040_preslie dist pyproject.toml requirements.txt venv'
+    'README.md cmc_cs040_preslie pyproject.toml requirements.txt'
     
     >>> ls('cmc_cs040_preslie/tools')
     'cmc_cs040_preslie/tools/__pycache__ cmc_cs040_preslie/tools/calculate.py cmc_cs040_preslie/tools/cat.py cmc_cs040_preslie/tools/ls.py '
