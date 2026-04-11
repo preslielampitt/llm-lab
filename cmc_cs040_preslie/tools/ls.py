@@ -25,3 +25,21 @@ def ls(folder=None):
         for path in sorted(glob.glob('*')):
             result += path + ' '
         return result.strip()
+
+ls_tool_schema = {
+    "type": "function",
+    "function": {
+        "name": "ls",
+        "description": "List files in a directory",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "description": "The folder to list. If omitted, list the current directory."
+                }
+            },
+            "required": [],
+        },
+    },
+}

@@ -8,7 +8,7 @@ def calculate(expression):
     except:
         return json.dumps({"error": "Invalid expression"})
 
-tool_schema = {
+calculate_tool_schema = {
     "type": "function",
     "function": {
         "name": "calculate",

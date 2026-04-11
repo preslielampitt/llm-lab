@@ -20,3 +20,21 @@ def cat(filename):
         return 'File is not a readable text file'
     except Exception:
         return 'Error reading file'
+
+cat_tool_schema = {
+    "type": "function",
+    "function": {
+        "name": "cat",
+        "description": "Open a text file and return its contents",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "The file to read"
+                }
+            },
+            "required": ["filename"],
+        },
+    },
+}
