@@ -120,20 +120,7 @@ class Chat:
             })
         return result
 
-# this makes the user interface nicer by saying 'chat>'
 # repl: reads input and evaluates input
-'''
-if __name__ == '__main__': 
-    chat = Chat()
-    try:
-        while True: 
-                user_input = input('chat>')
-                response = chat.send_message(user_input)
-                print(response)
-    except KeyboardInterrupt:
-        print()
-'''
-
 def repl(temperature=0.8):
     import readline
     chat = Chat()
