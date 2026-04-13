@@ -1,4 +1,3 @@
-```markdown
 # Project Chat Agent
 
 Project Chat Agent is a command-line assistant that answers questions about files in the current repository and can use built-in tools such as `ls`, `cat`, `grep`, and `calculate`. It supports both automatic tool use through the language model and manual slash commands for fast, deterministic access to repository information.
@@ -17,7 +16,6 @@ Animated terminal demo coming soon.
 
 ```bash
 pip install cmc-cs040-preslie
-```
 
 ## Usage
 
