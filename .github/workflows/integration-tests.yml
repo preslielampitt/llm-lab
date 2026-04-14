@@ -19,7 +19,7 @@ jobs:
       - name: Install package
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade cmc-cs040-preslie
+          pip install .
 
       - name: Run integration test
         env:

@@ -228,6 +228,7 @@ def repl(temperature=0.8, debug=False):
 
 
 def main():
+    print(sys.argv)
     debug = False
     args = sys.argv[1:]
 
