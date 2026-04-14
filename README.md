@@ -16,6 +16,7 @@ Animated terminal demo coming soon.
 
 ```bash
 pip install cmc-cs040-preslie
+```
 
 ## Usage
 
@@ -32,7 +33,7 @@ You can ask normal questions, or run manual slash commands such as `/ls`, `/cat`
 This example shows how the tool can inspect a web project and answer a question based on repository contents.
 
 ```text
-$ cd test_projects/webpage
+$ cd test_projects/preslielampitt.github.io
 $ chat
 chat> tell me what files are in this project
 This project contains HTML, CSS, and related assets for a webpage.
@@ -58,7 +59,7 @@ This project converts markdown input into another output format based on its com
 This example shows how the tool can read project files and answer higher-level questions about the repository.
 
 ```text
-$ cd test_projects/ebay-scraper
+$ cd test_projects/ebay-webscraper
 $ chat
 chat> tell me about this project
 This project is designed to collect product information from eBay pages.

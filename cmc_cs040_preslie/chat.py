@@ -33,47 +33,53 @@ class Chat:
         self.messages = [
             {
                 "role": "system",
-                "content": "Write the output in 1-2 sentences. Always use tools when appropriate, but if the needed information is already in the conversation history, answer from that context instead of calling a tool again."
+                "content": "Write the output in 1-2 sentences. Always use tools when appropriate. Tools may only use relative paths inside the current working directory. Never use absolute paths or paths containing .. . When asked what a project does, first inspect README.md or the main source file. After reading enough information to answer, stop calling tools and give a final answer."
             },
         ]
 
     def send_message(self, message, temperature=0.8):
-        self.messages.append(
-            {
-                # system: never change; user: changes a lot
-                # the message that you are sending to the AI
-                'role': 'user',
-                'content': message
-            }
-        )
-        tools = [calculate_tool_schema, cat_tool_schema, ls_tool_schema, grep_tool_schema]
-        # in order to make non deterministic code deterministic:
-        # in this case, has a 'temperature' param that controls randomness:
-        # the higher the value, the more randomness;
-        # higher temperature = more creativity
-        chat_completion = self.client.chat.completions.create(
-            messages=self.messages,
-            model=self.MODEL,
-            temperature=temperature,
-            seed=0,
-            tools=tools,
-            tool_choice="auto",
-        )
+        self.messages.append({
+            'role': 'user',
+            'content': message
+        })
 
-        response_message = chat_completion.choices[0].message
-        tool_calls = response_message.tool_calls
-        # Step 2: Check if the model wants to call tools
-        if tool_calls:
-            # Map function names to implementations
-            available_functions = {
-                "calculate": calculate,
-                "ls": ls,
-                "cat": cat,
-                "grep": grep,
-            }
-            # Add the assistant's response to conversation
+        tools = [calculate_tool_schema, cat_tool_schema, ls_tool_schema, grep_tool_schema]
+        available_functions = {
+            "calculate": calculate,
+            "ls": ls,
+            "cat": cat,
+            "grep": grep,
+        }
+
+        max_rounds = 5
+        round_count = 0
+
+        while round_count < max_rounds:
+            round_count += 1
+            chat_completion = self.client.chat.completions.create(
+                messages=self.messages,
+                model=self.MODEL,
+                temperature=temperature,
+                seed=0,
+                tools=tools,
+                tool_choice="auto",
+            )
+
+            response_message = chat_completion.choices[0].message
+            tool_calls = response_message.tool_calls
+
+            if not tool_calls:
+                result = response_message.content
+                if result is None:
+                    result = "I couldn't generate a final text response."
+                self.messages.append({
+                    'role': 'assistant',
+                    'content': result
+                })
+                return result
+
             self.messages.append(response_message)
-            # Step 3: Execute each tool call
+
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions.get(function_name)
@@ -99,30 +105,18 @@ class Chat:
                         pattern=function_args.get("pattern"),
                         path=function_args.get("path")
                     )
-                # Add tool response to conversation
+
                 self.messages.append({
                     "tool_call_id": tool_call.id,
                     "role": "tool",
                     "name": function_name,
                     "content": function_response,
                 })
-
-            # Step 4: Get final response from model
-            second_response = self.client.chat.completions.create(
-                model=self.MODEL,
-                messages=self.messages
-            )
-            result = second_response.choices[0].message.content
-            self.messages.append({
-                'role': 'assistant',
-                'content': result
-            })
-        else:
-            result = chat_completion.choices[0].message.content
-            self.messages.append({
-                'role': 'assistant',
-                'content': result
-            })
+        result = "I couldn't generate a final text response."
+        self.messages.append({
+            'role': 'assistant',
+            'content': result
+        })
         return result
 
 
@@ -194,9 +188,6 @@ def repl(temperature=0.8):
                     'content': str(response)
                 })
                 continue
-
-            if chat is None:
-                chat = Chat()
 
             response = chat.send_message(user_input, temperature=temperature)
             print(response)

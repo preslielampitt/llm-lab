@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cmc-cs040-preslie"
 version = "0.1.6"
-description = "LLM-based chat/document summarization project for CSC040"
+description = "LLM-based chat/document summarization project"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -15,3 +15,6 @@ dependencies = [
 
 [project.scripts]
 chat = "cmc_cs040_preslie.chat:repl"
+
+[tool.setuptools.packages.find]
+include = ["cmc_cs040_preslie", "cmc_cs040_preslie.*"]
