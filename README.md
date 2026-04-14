@@ -30,14 +30,14 @@ You can ask normal questions, or run manual slash commands such as `/ls`, `/cat`
 
 The CLI also supports:
 
-one-shot command-line questions, such as chat "what files are in the .github folder?"
-a --debug flag to print tool calls as they happen
-tab completion for slash commands and file paths
+- one-shot command-line questions, such as chat "what is this project about?"
+- a --debug flag to print tool calls as they happen
+- tab completion for slash commands and file paths
 Examples:
 
 ```bash
-chat --debug "what files are in the .github folder?"
 chat "what is this project about?"
+chat --debug "what files are in the .github folder?"
 ```
 
 ## Example: Webpage Project
