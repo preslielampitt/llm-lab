@@ -1,16 +1,25 @@
+import argparse
 import os
 import json
 from groq import Groq
 import glob
 import readline
-import sys
 from .tools.calculate import calculate, calculate_tool_schema
 from .tools.cat import cat, cat_tool_schema
 from .tools.ls import ls, ls_tool_schema
 from .tools.grep import grep, grep_tool_schema
+from .tools.compact import compact, compact_tool_schema
 
 from dotenv import load_dotenv
 load_dotenv()
+
+SYSTEM_PROMPT = (
+    "Write the output in 1-2 sentences. Always use tools when appropriate. "
+    "Tools may only use relative paths inside the current working directory. "
+    "Never use absolute paths or paths containing .. . When asked what a "
+    "project does, first inspect README.md or the main source file. After "
+    "reading enough information to answer, stop calling tools and give a final answer."
+)
 
 
 class Chat:
@@ -30,13 +39,6 @@ class Chat:
     >>> isinstance(chat2.send_message('what is my name?', temperature=0.0), str)
     True
 
-    >>> chat = Chat()
-    >>> chat.messages.append({'role': 'user', 'content': 'My name is Bob'})
-    >>> summary = chat.compact()
-    >>> isinstance(summary, str)
-    True
-    >>> len(chat.messages)
-    2
     '''
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -44,25 +46,34 @@ class Chat:
         self.messages = [
             {
                 "role": "system",
-                "content": "Write the output in 1-2 sentences. Always use tools when appropriate. Tools may only use relative paths inside the current working directory. Never use absolute paths or paths containing .. . When asked what a project does, first inspect README.md or the main source file. After reading enough information to answer, stop calling tools and give a final answer."
+                "content": SYSTEM_PROMPT
             },
         ]
 
     def send_message(self, message, temperature=0.8, debug=False):
         '''
-        need a docstring (no tests is fine)
+        Send a user message to the language model, allow tool calls when needed, and return the final text response.
+
+        This method adds the user's message to the conversation history, repeatedly handles tool calls until the model returns text, and stores the final assistant response in `self.messages`.
         '''
         self.messages.append({
             'role': 'user',
             'content': message
         })
 
-        tools = [calculate_tool_schema, cat_tool_schema, ls_tool_schema, grep_tool_schema]
+        tools = [
+            calculate_tool_schema,
+            cat_tool_schema,
+            ls_tool_schema,
+            grep_tool_schema,
+            compact_tool_schema,
+        ]
         available_functions = {
             "calculate": calculate,
             "ls": ls,
             "cat": cat,
             "grep": grep,
+            "compact": compact,
         }
 
         max_rounds = 5
@@ -111,6 +122,8 @@ class Chat:
                         print(f"[tool] /cat {function_args.get('filename')}")
                     elif function_name == "grep":
                         print(f"[tool] /grep {function_args.get('pattern')} {function_args.get('path')}")
+                    elif function_name == "compact":
+                        print("[tool] /compact")
 
                 if function_name == "calculate":
                     function_response = function_to_call(
@@ -129,6 +142,18 @@ class Chat:
                         pattern=function_args.get("pattern"),
                         path=function_args.get("path")
                     )
+                elif function_name == "compact":
+                    function_response = function_to_call(self.messages)
+                    self.messages = [
+                        {
+                            "role": "system",
+                            "content": SYSTEM_PROMPT
+                        },
+                        {
+                            "role": "assistant",
+                            "content": f"Conversation summary:\n{function_response}"
+                        }
+                    ]
 
                 self.messages.append({
                     "tool_call_id": tool_call.id,
@@ -136,6 +161,7 @@ class Chat:
                     "name": function_name,
                     "content": function_response,
                 })
+
         result = "I couldn't generate a final text response."
         self.messages.append({
             'role': 'assistant',
@@ -143,61 +169,16 @@ class Chat:
         })
         return result
 
-    def compact(self):
-        # it's the right idea to use a Chat instance to compact;
-        # but it is a bit weird to create a new instance inside another instance
-        # this can lead to all sorts of memory management problems if you're
-        # not careful;
-        # in this case, though, I don't think there's problems;
-        # but for credit, this was required to be implemented as a tool
-        # (and so e.g. the AI could call it itself)
-        summarizer = Chat()
-
-        # I reformatted to be more pythonic
-        prompt = {
-            "role": "system",
-            "content": (
-                "Summarize this conversation in 1-5 lines. "
-                "Keep important facts, prior tool results, and user goals. "
-                "Do not include unnecessary detail."
-                )
-            }
-        summary_messages = [prompt] + self.messages
-
-        response = summarizer.client.chat.completions.create(
-            model=self.MODEL,
-            messages=summary_messages,
-            # in general, we don't want "magic numbers" in our code anywhere
-            # these would be better as parameters to the function with 
-            # default values
-            temperature=0.0,
-            seed=0,
-        )
-
-        summary = response.choices[0].message.content
-
-        self.messages = [
-            {
-                # it's weird to duplicate the system prompt like this;
-                # better is to create a single class variable and set it from
-                # there everytime you need to recreate self.messages
-                "role": "system",
-                "content": "Write the output in 1-2 sentences. Always use tools when appropriate. Tools may only use relative paths inside the current working directory. Never use absolute paths or paths containing .. . If information is already in the conversation history, answer from that context instead of calling a tool again."
-            },
-            {
-                "role": "assistant",
-                "content": f"Conversation summary:\n{summary}"
-            }
-        ]
-
-        return summary
-
 
 COMMANDS = ['ls', 'cat', 'grep', 'calculate', 'compact']
 
 
 def command_completer(text, state):
-    # needs a docstring, but no doctests is fine
+    '''
+    Return the next tab-completion match for slash commands or file paths.
+
+    When the current input begins with `/`, this function suggests supported command names for the first token and matching file or directory names for later tokens.
+    '''
     buffer = readline.get_line_buffer()
     parts = buffer.split()
 
@@ -230,10 +211,10 @@ def command_completer(text, state):
 
 def repl(temperature=0.8, debug=False):
     '''
-    Need a docstring.
+    Run an interactive chat session that supports normal questions, slash commands, and optional debug output.
 
-    I cleaned your doctests a lot here;
-    your version had a lot of unneeded duplicate code
+    The REPL reads user input in a loop, executes slash commands directly without calling the language model, and otherwise sends messages through the `Chat` object.
+
     >>> def monkey_input(prompt):
     ...     try:
     ...         user_input = user_inputs.pop(0)
@@ -256,7 +237,7 @@ def repl(temperature=0.8, debug=False):
     File not found
     <BLANKLINE>
 
-    >>> ['/ls cmc_cs040_preslie']
+    >>> user_inputs=['/ls cmc_cs040_preslie']
     >>> repl(debug=True)  # doctest: +ELLIPSIS
     chat> /ls cmc_cs040_preslie
     [tool] /ls cmc_cs040_preslie
@@ -298,7 +279,17 @@ def repl(temperature=0.8, debug=False):
                         else:
                             response = grep(grep_parts[0], grep_parts[1])
                 elif command == 'compact':
-                    response = chat.compact()
+                    response = compact(chat.messages)
+                    chat.messages = [
+                        {
+                            "role": "system",
+                            "content": SYSTEM_PROMPT
+                        },
+                        {
+                            "role": "assistant",
+                            "content": f"Conversation summary:\n{response}"
+                        }
+                    ]
                 else:
                     response = 'Unknown command'
 
@@ -322,22 +313,30 @@ def repl(temperature=0.8, debug=False):
 
 def main():
     '''
-    need a docstring
+    Run the command-line entry point for the chat program.
+
+    This function parses the `--debug` flag and an optional one-shot message from the command line, then either sends that message once or starts the interactive REPL.
     '''
-    debug = False
-    args = sys.argv[1:]
-    # better is to use argparse than to manually parse through the sys.argv list
+    parser = argparse.ArgumentParser(description='Chat with the current project.')
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='print tool calls while the chat runs'
+    )
+    parser.add_argument(
+        'message',
+        nargs='*',
+        help='optional one-shot message to send to the chat'
+    )
 
-    if '--debug' in args:
-        debug = True
-        args.remove('--debug')
+    args = parser.parse_args()
 
-    if args:
+    if args.message:
         chat = Chat()
-        message = ' '.join(args)
-        print(chat.send_message(message, debug=debug))
+        message = ' '.join(args.message)
+        print(chat.send_message(message, debug=args.debug))
     else:
-        repl(debug=debug)
+        repl(debug=args.debug)
 
 
 if __name__ == '__main__':

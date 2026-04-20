@@ -14,7 +14,7 @@ def ls(folder=None):
     >>> 'test_projects' in result
     True
     >>> ls('cmc_cs040_preslie/tools')
-    'cmc_cs040_preslie/tools/__pycache__ cmc_cs040_preslie/tools/calculate.py cmc_cs040_preslie/tools/cat.py cmc_cs040_preslie/tools/grep.py cmc_cs040_preslie/tools/ls.py cmc_cs040_preslie/tools/path_utils.py '
+    'cmc_cs040_preslie/tools/__pycache__ cmc_cs040_preslie/tools/calculate.py cmc_cs040_preslie/tools/cat.py cmc_cs040_preslie/tools/compact.py cmc_cs040_preslie/tools/grep.py cmc_cs040_preslie/tools/ls.py cmc_cs040_preslie/tools/path_utils.py '
     >>> ls('../')
     'Invalid path'
     '''

@@ -3,18 +3,12 @@
 ![doctest](https://github.com/preslielampitt/llm-lab/actions/workflows/doctests.yml/badge.svg)
 ![integration-test](https://github.com/preslielampitt/llm-lab/actions/workflows/integration-tests.yml/badge.svg)
 ![Flake8](https://github.com/preslielampitt/llm-lab/actions/workflows/flake8.yml/badge.svg)
-![PyPI](https://img.shields.io/pypi/v/cmc-cs040-preslie)
-<!-- The Coverage badge needs to use coverage.io; the pypi badge should be a link to pypi (or include a link at the top, not at the bottom) -->
+![PyPI](https://pypi.org/project/cmc-cs040-preslie/)
+[![codecov](https://codecov.io/github/preslielampitt/llm-chat-agent/graph/badge.svg?token=0P1LX0SLH1)](https://codecov.io/github/preslielampitt/llm-chat-agent)
 
 Project Chat Agent is a command-line assistant that answers questions about files in the current repository and can use built-in tools such as `ls`, `cat`, `grep`, and `calculate`. It supports both automatic tool use through the language model and manual slash commands for fast, deterministic access to repository information.
 
 ![Demo](assets/demo.gif)
-
-## Installation
-
-```bash
-pip install cmc-cs040-preslie
-```
 
 ## Usage
 
@@ -24,18 +18,57 @@ chat
 
 Once running, type your messages and press Enter. Use `Ctrl+C` to exit.
 
-You can ask normal questions, or run manual slash commands such as `/ls`, `/cat`, `/grep`, and `/calculate`.
+For example, you can ask the assistant to explain a project, list files, or inspect source code, and it will use Groq together with built-in tools to answer based on the repository you are currently in. If you want more control, you can run tools yourself with slash commands such as /ls, /cat, /grep, /calculate, and /compact.
 
-The CLI also supports:
+You can also use the program outside the interactive chat for quick one-line questions, turn on --debug to see tool calls while they happen, and use Tab to complete slash commands or file paths as you type. For example, /ls .g can complete to /ls .github, and /compact can shorten the current chat history so later responses are faster and more focused.
 
-- one-shot command-line questions, such as chat "what is this project about?"
-- a --debug flag to print tool calls as they happen
-- tab completion for slash commands and file paths
-Examples:
+### Quick Examples
+
+This example shows how to ask a one-shot question without entering the interactive chat.
 
 ```bash
-chat "what is this project about?"
-chat --debug "what files are in the .github folder?"
+$ chat "what is this project about?"
+```
+
+This example shows how to use --debug to print tool calls while the assistant works.
+```bash
+$ chat --debug "what files are in the .github folder?"
+```
+
+This example shows how /ls can directly list files in a folder and then give the assistant context for a follow-up question.
+```bash
+$ chat
+chat> /ls .github
+.github/workflows
+chat> what files are in the .github folder?
+The `.github` folder contains the `workflows` subdirectory.
+```
+
+This example shows how /cat can load a file into the conversation so the assistant can answer questions about it.
+```bash
+$ chat
+chat> /cat README.md
+chat> what does this project do?
+This project is a command-line assistant for exploring repositories with tool support.
+```
+
+This example shows how /calculate can evaluate a mathematical expression directly in the chat.
+```bash
+$ chat
+chat> /calculate 2+2
+4
+```
+
+This example shows how /grep can search files for matching text or patterns.
+```bash
+$ chat
+chat> /grep def cmc_cs040_preslie/tools/*.py
+```
+
+This example shows how /compact can summarize the current chat history to keep the conversation shorter and more efficient.
+```bash
+$ chat
+chat> /compact
 ```
 
 ## Example: Webpage Project
@@ -72,8 +105,3 @@ This project is designed to collect product information from eBay pages.
 chat> what libraries does it use?
 I checked the code and identified the main libraries imported by the scraper.
 ```
-
-<!-- the features you listed all read like AI slop;
-you want to avoid giving that impression in your technical writing
-the way to make it not sound like slop is weave the features into the examples
--->
