@@ -3,8 +3,8 @@
 ![doctest](https://github.com/preslielampitt/llm-lab/actions/workflows/doctests.yml/badge.svg)
 ![integration-test](https://github.com/preslielampitt/llm-lab/actions/workflows/integration-tests.yml/badge.svg)
 ![Flake8](https://github.com/preslielampitt/llm-lab/actions/workflows/flake8.yml/badge.svg)
-![PyPI](https://pypi.org/project/cmc-cs040-preslie/)
 [![codecov](https://codecov.io/github/preslielampitt/llm-chat-agent/graph/badge.svg?token=0P1LX0SLH1)](https://codecov.io/github/preslielampitt/llm-chat-agent)
+[![PyPI](https://img.shields.io/pypi/v/cmc-cs040-preslie)](https://pypi.org/project/cmc-cs040-preslie/)
 
 Project Chat Agent is a command-line assistant that answers questions about files in the current repository and can use built-in tools such as `ls`, `cat`, `grep`, and `calculate`. It supports both automatic tool use through the language model and manual slash commands for fast, deterministic access to repository information.
 
