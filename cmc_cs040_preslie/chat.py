@@ -45,6 +45,9 @@ class Chat:
 
     '''
     def __init__(self):
+        '''
+        Initialize a chat session with a Groq client, a model name, and the default system prompt.
+        '''
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         self.MODEL = 'openai/gpt-oss-120b'
         self.messages = [
