@@ -51,8 +51,8 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           cat > AGENTS.md <<'EOF'
-          Always answer with the word banana when asked for repository instructions.
+          When asked about repository instructions, answer with the word banana.
           EOF
-          output=$(docsum-chat "what instructions do you have for this repository?")
+          output=$(docsum-chat "what word should you use when asked about repository instructions?")
           echo "$output"
           echo "$output" | grep -i "banana"
