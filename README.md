@@ -24,18 +24,17 @@ You can also use the program outside the interactive chat for quick one-line que
 
 ### Quick Examples
 
-This example shows how to ask a one-shot question without entering the interactive chat.
-
+How to ask a one-line question without entering the interactive chat.
 ```bash
 $ chat "what is this project about?"
 ```
 
-This example shows how to use --debug to print tool calls while the assistant works.
+How to use --debug to print tool calls while the assistant works.
 ```bash
 $ chat --debug "what files are in the .github folder?"
 ```
 
-This example shows how /ls can directly list files in a folder and then give the assistant context for a follow-up question.
+How /ls can directly list files in a folder and then give the assistant context for a follow-up question.
 ```bash
 $ chat
 chat> /ls .github
@@ -44,7 +43,7 @@ chat> what files are in the .github folder?
 The `.github` folder contains the `workflows` subdirectory.
 ```
 
-This example shows how /cat can load a file into the conversation so the assistant can answer questions about it.
+How /cat can load a file into the conversation so the assistant can answer questions about it.
 ```bash
 $ chat
 chat> /cat README.md
@@ -52,20 +51,20 @@ chat> what does this project do?
 This project is a command-line assistant for exploring repositories with tool support.
 ```
 
-This example shows how /calculate can evaluate a mathematical expression directly in the chat.
+How /calculate can evaluate a mathematical expression directly in the chat.
 ```bash
 $ chat
 chat> /calculate 2+2
 4
 ```
 
-This example shows how /grep can search files for matching text or patterns.
+How /grep can search files for matching text or patterns.
 ```bash
 $ chat
 chat> /grep def cmc_cs040_preslie/tools/*.py
 ```
 
-This example shows how /compact can summarize the current chat history to keep the conversation shorter and more efficient.
+How /compact can summarize the current chat history to keep the conversation shorter and more efficient.
 ```bash
 $ chat
 chat> /compact
@@ -86,7 +85,7 @@ Yes, the project includes a CSS file for styling the page.
 
 This example shows how the tool can inspect source code and summarize implementation details.
 
-```text
+```bash
 $ cd test_projects/markdown-compiler
 $ chat
 chat> does this project use regular expressions?
@@ -97,7 +96,7 @@ This project converts markdown input into another output format based on its com
 
 This example shows how the tool can read project files and answer higher-level questions about the repository.
 
-```text
+```bash
 $ cd test_projects/ebay-webscraper
 $ chat
 chat> tell me about this project
