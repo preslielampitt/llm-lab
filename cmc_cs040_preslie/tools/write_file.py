@@ -7,6 +7,31 @@ def write_file(path, contents, commit_message):
 
     >>> write_file('/etc/passwd', 'x', 'bad write')
     'Invalid path'
+
+    >>> import os
+    >>> import tempfile
+    >>> from git import Repo
+    >>> old = os.getcwd()
+    >>> with tempfile.TemporaryDirectory() as d:
+    ...     try:
+    ...         os.chdir(d)
+    ...         repo = Repo.init(d)
+    ...         os.makedirs('folder', exist_ok=True)
+    ...         source = open(old + '/cmc_cs040_preslie/tools/path_utils.py', 'r', encoding='utf-8').read()
+    ...         result = write_files(
+    ...             [{'path': 'folder/test.py', 'contents': source}],
+    ...             'add test file'
+    ...         )
+    ...         os.path.exists('folder/test.py')
+    ...         repo.head.commit.message
+    ...         result.splitlines()[0]
+    ...         result.splitlines()[1]
+    ...     finally:
+    ...         os.chdir(old)
+    True
+    '[docchat] add test file'
+    'Wrote 1 file(s).'
+    'Doctests for folder/test.py:'
     '''
     return write_files(
         [{'path': path, 'contents': contents}],

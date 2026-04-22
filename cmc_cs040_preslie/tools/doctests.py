@@ -10,6 +10,10 @@ def doctests(path):
 
     >>> doctests('/etc/passwd')
     'Invalid path'
+
+    >>> result = doctests('cmc_cs040_preslie/tools/path_utils.py')
+    >>> result.splitlines()[0]
+    '============================= test session starts =============================='
     '''
     if not is_path_safe(path):
         return 'Invalid path'

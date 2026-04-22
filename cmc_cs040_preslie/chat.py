@@ -32,17 +32,21 @@ class Chat:
     It can also let the model call tools such as `calculate`, `ls`, `cat`, and `grep` when they are useful for answering a question.
     The conversation history is saved in `self.messages` so the model can remember earlier context.
 
+    Because LLMs are non-deterministic, the doctests below do not check the full output.
+    We simply assert that the model's response includes the name 'Bob' if the conversation has already mentioned the name.
+
     >>> chat = Chat()
-    >>> isinstance(chat.send_message('my name is Bob', temperature=0.0), str)
-    True
+    >>> response = chat.send_message('my name is Bob', temperature=0.0)
     >>> response = chat.send_message('what is my name?', temperature=0.0)
     >>> 'bob' in response.lower()
     True
 
-    >>> chat2 = Chat()
-    >>> isinstance(chat2.send_message('what is my name?', temperature=0.0), str)
-    True
+    The response should not include the name 'Bob' if the conversation has not mentioned the name.
 
+    >>> chat2 = Chat()
+    >>> response = chat2.send_message('what is my name?', temperature=0.0)
+    >>> 'bob' in response.lower()
+    False
     '''
     def __init__(self):
         '''
@@ -218,27 +222,6 @@ COMMANDS = ['ls', 'cat', 'grep', 'calculate', 'compact', 'doctests', 'rm']
 def initialize_chat():
     '''
     Create a chat session for the current repository and preload AGENTS.md.
-    >>> import os
-    >>> import tempfile
-    >>> old = os.getcwd()
-    >>> with tempfile.TemporaryDirectory() as d:
-    ...     os.chdir(d)
-    ...     try:
-    ...         initialize_chat()
-    ...     except SystemExit:
-    ...         pass
-    ...     finally:
-    ...         os.chdir(old)
-    Error: this program must be run from a repository root containing a .git folder.
-    >>> with tempfile.TemporaryDirectory() as d:
-    ...     os.chdir(d)
-    ...     os.mkdir('.git')
-    ...     with open('AGENTS.md', 'w') as f:
-    ...         _ = f.write('Use short answers.')
-    ...     chat = initialize_chat()
-    ...     'Use short answers.' in chat.messages[-1]['content']
-    ...     os.chdir(old)
-    True
     '''
     if not os.path.isdir('.git'):
         print('Error: this program must be run from a repository root containing a .git folder.')

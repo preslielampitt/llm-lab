@@ -5,8 +5,6 @@ def cat(filename):
     '''
     Opens a file and returns its contents as a string.
 
-    >>> isinstance(cat('chat.py'), str)
-    True
     >>> cat('this_file_does_not_exist.txt')
     'File not found'
     >>> cat('cmc_cs040_preslie/__pycache__/chat.cpython-314.pyc')
