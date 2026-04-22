@@ -11,6 +11,23 @@ def write_files(files, commit_message):
 
     >>> write_files([{'path': '/etc/passwd', 'contents': 'x'}], 'bad write')
     'Invalid path'
+
+    >>> import os
+    >>> import tempfile
+    >>> from git import Repo
+    >>> old = os.getcwd()
+    >>> with tempfile.TemporaryDirectory() as d:
+    ...     try:
+    ...         os.chdir(d)
+    ...         repo = Repo.init(d)
+    ...         write_files([{'path': 'note.txt', 'contents': 'hello'}], 'add note')
+    ...         open('note.txt', 'r', encoding='utf-8').read()
+    ...         repo.head.commit.message
+    ...     finally:
+    ...         os.chdir(old)
+    'Wrote 1 file(s).'
+    'hello'
+    '[docchat] add note'
     '''
     paths = []
     python_paths = []

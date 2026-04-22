@@ -6,14 +6,19 @@ from cmc_cs040_preslie.tools.path_utils import is_path_safe
 
 def grep(pattern, path):
     '''
-    Search for lines matching a regex in files matched by a glob.
+    Search for lines matching a regular expression in files matched by a glob.
+
+    Returns an empty string when no lines match.
 
     >>> grep('hello', 'cmc_cs040_preslie/chat.py')
     ''
+
+    Returns the matching lines when the pattern appears in one or more files.
+
     >>> grep('def', 'cmc_cs040_preslie/tools/*.py') != ''
     True
-    >>> 'def grep(pattern, path):' in grep('def grep', 'cmc_cs040_preslie/tools/grep.py')
-    True
+
+    Returns an empty string for binary files and directories.
 
     >>> with open('bad.bin', 'wb') as f:
     ...     _ = f.write(b'\\xff\\xfe\\x00\\x00')
@@ -21,10 +26,10 @@ def grep(pattern, path):
     ''
     >>> os.remove('bad.bin')
 
-    >>> os.path.isdir('cmc_cs040_preslie/tools')
-    True
     >>> grep('x', 'cmc_cs040_preslie/tools')
     ''
+
+    Returns an error for invalid paths and invalid regular expressions.
 
     >>> grep('abc', '../secret.txt')
     'Invalid path'

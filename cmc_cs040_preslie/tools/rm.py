@@ -11,6 +11,37 @@ def rm(path):
 
     >>> rm('/etc/passwd')
     'Invalid path'
+
+    >>> import os
+    >>> import tempfile
+    >>> from git import Repo
+    >>> from cmc_cs040_preslie.tools.git_utils import commit_paths
+    >>> old = os.getcwd()
+    >>> with tempfile.TemporaryDirectory() as d:
+    ...     try:
+    ...         os.chdir(d)
+    ...         _ = Repo.init(d)
+    ...         with open('a.txt', 'w', encoding='utf-8') as f:
+    ...             _ = f.write('hello')
+    ...         commit_paths(['a.txt'], '[docchat] add a')
+    ...         rm('a.txt')
+    ...         os.path.exists('a.txt')
+    ...     finally:
+    ...         os.chdir(old)
+    'Removed a.txt'
+    False
+    >>> import os
+    >>> import tempfile
+    >>> from git import Repo
+    >>> old = os.getcwd()
+    >>> with tempfile.TemporaryDirectory() as d:
+    ...     try:
+    ...         os.chdir(d)
+    ...         _ = Repo.init(d)
+    ...         rm('missing.txt')
+    ...     finally:
+    ...         os.chdir(old)
+    'No files removed'
     '''
     if not is_path_safe(path):
         return 'Invalid path'
