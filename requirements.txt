@@ -4,3 +4,7 @@ GitPython
 pytest
 coverage
 flake8
+fastapi>=0.100.0
+uvicorn>=0.23.0
+gradio
+openai
